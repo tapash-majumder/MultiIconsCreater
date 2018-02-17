@@ -12,16 +12,15 @@ import Foundation
 
 print("Hello, World!")
 
-let sourceFile = "app-1024x768.svg"
-let outputDir = "output"
+let sourceFile = "/users/tapash/prog/other/misc/swift/MultiIconsCreater/rocket-2.svg"
+let outputDir = "/users/tapash/temp/output"
 let outputPrefix = "icon"
 
 let requirements = [
-    ["width" : 60, "height" : 45, "dims" : [2, 3]],
-    ["width" : 67, "height" : 50, "dims" : [2]],
-    ["width" : 74, "height" : 55, "dims" : [2]],
-    ["width" : 27, "height" : 20, "dims" : [2, 3]],
-    ["width" : 32, "height" : 24, "dims" : [2, 3]],
+    ["width" : 60, "height" : 60, "dims" : [2, 3]],
+    ["width" : 76, "height" : 76, "dims" : [1, 2]],
+    ["width" : 83.5, "height" : 83.5, "dims" : [2]],
+    ["width" : 1024, "height" : 1024, "dims" : [1]],
 ]
 
 func createDestination() {
@@ -35,18 +34,20 @@ func createDestination() {
 
 func doRequirements() {
     for requirement in requirements {
-        guard let width = requirement["width"] as? Int else {
+        guard let width = requirement["width"] as? Double else {
             return
         }
-        guard let height = requirement["height"] as? Int else {
+        guard let height = requirement["height"] as? Double else {
             return
         }
         guard let dims = requirement["dims"] as? [Int] else {
             return
         }
-        
+
         for dim in dims {
-            createOneIcon(width: width * dim, height: height * dim)
+            let intWidth = Int(Double(dim) * width)
+            let intHeight = Int(Double(dim) * height)
+            createOneIcon(width: intWidth, height: intHeight)
             moveIconToDestination(width: width, height: height, dim: dim)
         }
     }
@@ -55,14 +56,14 @@ func doRequirements() {
 func createOneIcon(width: Int, height: Int) {
     let process = Process()
     process.launchPath = "/usr/bin/qlmanage"
-    process.arguments = ["-t", "-s", "\(width):\(height)", "-o", ".", sourceFile]
+    process.arguments = ["-t", "-s", "\(width):\(height)", "-o", "/users/tapash/prog/other/misc/swift/MultiIconsCreater", sourceFile]
     
     process.launch()
     process.waitUntilExit()
 }
 
 // icon-30x20@2x.png
-func moveIconToDestination(width: Int, height: Int, dim: Int) {
+func moveIconToDestination(width: Double, height: Double, dim: Int) {
     let process = Process()
     process.launchPath = "/bin/mv"
     process.arguments = ["\(sourceFile).png", "\(outputDir)/\(outputPrefix)-\(width)x\(height)@\(dim)x.png"]
